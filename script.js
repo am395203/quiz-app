@@ -6,6 +6,7 @@ const questionSubject = document.querySelector(".question-subject");
 const questionDifficulty = document.querySelector(".question-difficulty");
 const ansBtn = document.querySelector(".answers");
 const nextBtn = document.querySelector(".next-btn");
+let ansArr;
 
 let currentQuestionIndex = 0;
 let score = 0;
@@ -60,7 +61,7 @@ function showQuestion(data){
     questionDifficulty.innerHTML = `${data.difficulty}`;
     
     //correct/incorrect concatinated into 1 array then shuffled
-    let ansArr = data.incorrect_answers.concat(data.correct_answer);
+    ansArr = data.incorrect_answers.concat(data.correct_answer);
     shuffle(ansArr);
 
     //adding answer buttons
@@ -70,10 +71,7 @@ function showQuestion(data){
         button.classList.add("btn");
         ansBtn.appendChild(button);
 
-        
-        //button.addEventListener("click",selectAnswer);
-
-
+        button.addEventListener("click", (e) => {selectAnswer(e,data.correct_answer)});
 
     });
 }
@@ -84,9 +82,53 @@ function resetState(){
     }
 }
 
-function selectAnswer(e){
+function selectAnswer(e, ans){
+
     const selected = e.target;
-    //const isCorrect = ;
+
+    if(selected.innerHTML === ans){
+        selected.classList.add("correct");
+        score++;
+    }
+    else{
+        selected.classList.add("incorrect");
+    }
+    //console.log(selected.innerHTML);
+    //console.log(ans);
+
+    Array.from(ansBtn.children).forEach(button => {
+        //console.log(button.innerHTML);
+        if(button.innerHTML === ans){
+            button.classList.add("correct");
+        }
+        button.disabled = true;
+    });
+    nextBtn.style.display = "block";
 }
+
+/*
+function showScore(){
+    resetState();
+
+}*/
+
+function handleNext(){
+    currentQuestionIndex++;
+    if(currentQuestionIndex <= 10){
+        showQuestion();
+    }
+    else{
+        showScore();
+    }
+}
+
+nextBtn.addEventListener("click", ()=>{
+    if(currentQuestionIndex <= 10){
+        console.log("next");
+    }
+    else{
+        startQuiz();
+    }
+});
 
 startQuiz();
