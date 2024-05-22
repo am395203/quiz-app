@@ -15,7 +15,7 @@ let score = 0;
 
 
 function startQuiz(){
-
+    nextBtn.style.display = "none";
     currentQuestionIndex = 0;
     score = 0;
     nextBtn.innerHTML = "Next";
@@ -80,10 +80,10 @@ function showQuestion(data){
 }
 
 function resetState(){
+    nextBtn.style.display = "none";
     while(ansBtn.firstChild){
         ansBtn.removeChild(ansBtn.firstChild);
     }
-    nextBtn.style.display = "hidden";
 }
 
 function selectAnswer(e, ans){
