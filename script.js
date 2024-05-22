@@ -1,10 +1,11 @@
 'use strict';
 //https://opentdb.com/api.php?amount=10&type=multiple
+//https://opentdb.com/api.php?amount=1&type=multiple
 
 const quizQuestion = document.querySelector(".quiz-question");
 const questionSubject = document.querySelector(".question-subject");
 const questionDifficulty = document.querySelector(".question-difficulty");
-const ansBtn = document.querySelector(".answers");
+let ansBtn = document.querySelector(".answers");
 const nextBtn = document.querySelector(".next-btn");
 let ansArr;
 
@@ -23,7 +24,7 @@ function startQuiz(){
 
 async function loadQuestion(){
 
-    const apiUrl = 'https://opentdb.com/api.php?amount=10&type=multiple';
+    const apiUrl = 'https://opentdb.com/api.php?amount=1&type=multiple';
 
     try{
         const response = await fetch(`${apiUrl}`);
@@ -53,7 +54,7 @@ function shuffle(answers){
 function showQuestion(data){
 
     let questionNumber = currentQuestionIndex + 1;
-    console.log(data);
+    //console.log(data);
 
     //updating question, difficult, subject, etc.
     quizQuestion.innerHTML = `${questionNumber}. ${data.question}`;
@@ -106,16 +107,20 @@ function selectAnswer(e, ans){
     nextBtn.style.display = "block";
 }
 
-/*
 function showScore(){
     resetState();
-
-}*/
+    quizQuestion.innerHTML = `You scored ${score} out of 10.`;
+    nextBtn.innerHTML = "Play Again";
+    nextBtn.style.display = "block";
+    questionSubject.innerHTML = "";
+    questionDifficulty.innerHTML = "";
+}
 
 function handleNext(){
     currentQuestionIndex++;
-    if(currentQuestionIndex <= 10){
-        showQuestion();
+    if(currentQuestionIndex < 10){
+        resetState();
+        loadQuestion();
     }
     else{
         showScore();
@@ -124,7 +129,7 @@ function handleNext(){
 
 nextBtn.addEventListener("click", ()=>{
     if(currentQuestionIndex <= 10){
-        console.log("next");
+        handleNext();
     }
     else{
         startQuiz();
