@@ -8,6 +8,7 @@ const questionDifficulty = document.querySelector(".question-difficulty");
 let ansBtn = document.querySelector(".answers");
 const nextBtn = document.querySelector(".next-btn");
 let ansArr;
+let qset;
 
 let currentQuestionIndex = 0;
 let score = 0;
@@ -24,7 +25,7 @@ function startQuiz(){
 
 async function loadQuestion(){
 
-    const apiUrl = 'https://opentdb.com/api.php?amount=1&type=multiple';
+    const apiUrl = 'https://opentdb.com/api.php?amount=10&type=multiple';
 
     try{
         const response = await fetch(`${apiUrl}`);
@@ -33,8 +34,8 @@ async function loadQuestion(){
             throw new Error("Unable to fetch quiz data");
         }
         const data = await response.json();
-
-        showQuestion(data.results[0]);
+        qset = data;
+        showQuestion(data);
 
     } catch(error){
         console.log(error);
@@ -52,17 +53,18 @@ function shuffle(answers){
 }
 
 function showQuestion(data){
-
+    let curr = data.results[currentQuestionIndex];
     let questionNumber = currentQuestionIndex + 1;
-    //console.log(data);
+    //console.log(qset);
+    //console.log(curr);
 
     //updating question, difficult, subject, etc.
-    quizQuestion.innerHTML = `${questionNumber}. ${data.question}`;
-    questionSubject.innerHTML = `${data.category}`;
-    questionDifficulty.innerHTML = `${data.difficulty}`;
+    quizQuestion.innerHTML = `${questionNumber}. ${curr.question}`;
+    questionSubject.innerHTML = `${curr.category}`;
+    questionDifficulty.innerHTML = `${curr.difficulty}`;
     
     //correct/incorrect concatinated into 1 array then shuffled
-    ansArr = data.incorrect_answers.concat(data.correct_answer);
+    ansArr = curr.incorrect_answers.concat(curr.correct_answer);
     shuffle(ansArr);
 
     //adding answer buttons
@@ -72,7 +74,7 @@ function showQuestion(data){
         button.classList.add("btn");
         ansBtn.appendChild(button);
 
-        button.addEventListener("click", (e) => {selectAnswer(e,data.correct_answer)});
+        button.addEventListener("click", (e) => {selectAnswer(e,curr.correct_answer)});
 
     });
 }
@@ -81,6 +83,7 @@ function resetState(){
     while(ansBtn.firstChild){
         ansBtn.removeChild(ansBtn.firstChild);
     }
+    nextBtn.style.display = "hidden";
 }
 
 function selectAnswer(e, ans){
@@ -120,7 +123,7 @@ function handleNext(){
     currentQuestionIndex++;
     if(currentQuestionIndex < 10){
         resetState();
-        loadQuestion();
+        showQuestion(qset);
     }
     else{
         showScore();
